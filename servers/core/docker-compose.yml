@@ -1,0 +1,18 @@
+version: '3.5'
+
+services:
+  proxy:
+    image: itzg/bungeecord
+    container_name: proxy
+    environment:
+      TYPE: VELOCITY
+      DEBUG: "false"
+      ENABLE_RCON: "true"
+    ports:
+      - "25565:25577"
+    volumes:
+      - ./proxy/config.yml:/config/config.yml
+      - proxy:/server
+
+volumes:
+  proxy: {}
