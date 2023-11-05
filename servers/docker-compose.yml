@@ -1,0 +1,72 @@
+version: '3.5'
+services:
+  mc_survival:
+    container_name: mc_survival
+    build:
+      context: minecraft-world
+    restart: 'unless-stopped'
+    networks:
+      minecraft-net:
+        aliases:
+          - 'mc_survival'
+          - 'survival'
+    environment:
+      DIFFICULTY: 'normal'
+      VANILLATWEAKS_SHARECODE: 'wkNXI0'
+      MODE: 0
+
+      # SERVER CONFIG
+      MAX_WORLD_SIZE: 250000
+      LEVEL_TYPE: 'default'
+    volumes:
+      - ${MINECRAFT_DIR}/worlds/mc-survival/data:/data
+      - ./minecraft-world/config/:/config/
+    tty: true
+    stdin_open: true
+  mc_creative:
+    container_name: mc_creative
+    build:
+      context: minecraft-world
+    restart: 'unless-stopped'
+    networks:
+      minecraft-net:
+        aliases:
+          - 'mc_creative'
+          - 'creative'
+    environment:
+      DIFFICULTY: 'peaceful'
+      MODE: 1
+      GENERATE_STRUCTURES: "FALSE"
+
+      # SERVER CONFIG
+      MAX_WORLD_SIZE: 10000
+      LEVEL_TYPE: 'flat'
+    volumes:
+      - ${MINECRAFT_DIR}/worlds/mc-creative/data:/data
+    tty: true
+    stdin_open: true
+  mc_proxy:
+    image: itzg/bungeecord
+    container_name: mc_proxy
+    environment:
+      TYPE: VELOCITY
+      DEBUG: "false"
+      ENABLE_RCON: "true"
+    networks:
+      minecraft-net:
+        aliases:
+          - 'mc_proxy'
+          - 'proxy'
+    ports:
+      - "25565:25577"
+    volumes:
+      - ./core/proxy/:/config/
+      - proxy:/server
+
+volumes:
+  proxy: {}
+
+networks:
+  minecraft-net:
+    external:
+      name: minecraft-net
